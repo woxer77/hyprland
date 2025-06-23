@@ -1,0 +1,89 @@
+/*****----- Configuration -----*****/
+configuration {
+    show-icons:                 false;
+}
+
+/*****----- Global Properties -----*****/
+@import                          "./colors.rasi"
+@import                          "./fonts.rasi"
+
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  true;
+    cursor:                      "default";
+    background-color:            @background;
+}
+
+/*****----- Main Box -----*****/
+mainbox {
+    spacing:                     30px;
+    padding:                     30px;
+    margin:                      420px 0px 0px 0px;
+    background-color:            transparent;
+    children:                    [ "message", "listview" ];
+}
+
+/*****----- Message -----*****/
+message {
+    margin:                      0px;
+    padding:                     0px;
+    border-radius:               20px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+}
+textbox {
+    font:                        @prompt-font;
+    background-color:            inherit;
+    text-color:                  inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    placeholder-color:           @foreground;
+    blink:                       true;
+    markup:                      true;
+}
+
+/*****----- Listview -----*****/
+listview {
+    columns:                     2;
+    lines:                       2;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      horizontal;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    
+    spacing:                     30px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    cursor:                      "default";
+
+    margin:                      50px 0 0 750px;
+}
+
+/*****----- Elements -----*****/
+element {
+    padding:                     80px 200px;
+    border-radius:               20px;
+    background-color:            @background-normal;
+    text-color:                  @foreground;
+    cursor:                      pointer;
+
+    horizontal-align: 0.5;
+}
+element-text {
+    font:                        "feather 48";
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+}
+element selected.normal {
+    background-color:            @background-selected;
+    text-color:                  @foreground;
+}

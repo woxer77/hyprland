@@ -1,0 +1,207 @@
+* {
+  font-family: 'JetBrainsMono Nerd Font';
+  font-weight: bold;
+
+  font-size: 18px;
+}
+
+#clock,
+#language,
+#custom-weather,
+#workspaces,
+#window,
+#temperature,
+#cpu,
+#memory,
+#pulseaudio,
+#cava,
+#mpris,
+#network,
+#custom-vpn,
+#tray,
+#custom-updates {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  opacity: 0.8;
+  padding: 0 10px;
+  margin-top: 10px;
+  margin-bottom: 2px;
+  border-radius: 6px;
+}
+
+#clock {
+  margin-left: 10px;
+  border-radius: 6px;
+}
+
+#language {
+  margin-left: 6px;
+  margin-right: 6px;
+  border-radius: 6px;
+  min-width: 30px;
+}
+
+#custom-vpn {
+  margin-right: 6px;
+}
+
+#custom-vpn.connected {
+  color: #a6e3a1;
+  border-bottom: 2px solid #a6e3a1;
+  transition: all 0.3s ease;
+}
+
+#custom-vpn.disconnected {
+  color: #eba0ac;
+  border-bottom: 2px solid #eba0ac;
+  transition: all 0.3s ease;
+}
+
+#pulseaudio {
+  margin-right: 6px;
+}
+
+#custom-updates {
+  margin-right: 10px;
+  padding-left: 6px;
+  padding-right: 12px;
+}
+
+#custom-updates.active {
+  color: #a6e3a1;
+}
+
+#custom-updates.inactive {
+  color: #eba0ac;
+  animation: blink-updates 3s infinite;
+}
+
+#custom-weather {
+  margin-right: 6px;
+}
+
+#workspaces {
+  border-radius: 6px;
+  padding-right: 0px;
+  padding-left: 5px;
+  padding-top: 0;
+}
+
+#workspaces button {
+  color: #313244;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+#workspaces button.active {
+  color: #cdd6f4;
+  background-color: #2f3040;
+}
+
+#workspaces button.urgent {
+  color: #11111b;
+  background: #a6e3a1;
+  border-radius: 6px;
+}
+
+#workspaces button:hover {
+  background: none;
+  color: #cdd6f4;
+  border-radius: 6px;
+}
+
+#window {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+window#waybar {
+  background: transparent;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+}
+
+tooltip {
+  background: #27273d;
+  border-radius: 6px;
+  border: none;
+}
+
+#network.disconnected {
+  color: #eba0ac;
+  animation: blink 2s infinite;
+}
+
+#temperature.cpu {
+  margin-left: 6px;
+  border-radius: 6px 0 0 6px;
+}
+
+#temperature.critical {
+  color: #eba0ac;
+}
+
+#cpu {
+  border-radius: 0 6px 6px 0;
+  font-size: 20px;
+}
+
+#memory {
+  margin-left: 6px;
+  margin-right: 6px;
+  border-radius: 6px;
+}
+
+#tray {
+  margin-right: 10px;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes blink-updates {
+  0% {
+    color: #eba0ac;
+  }
+  12% {
+    color: #b8808c;
+  }
+  25% {
+    color: #85606c;
+  }
+  37% {
+    color: #52404d;
+  }
+  50% {
+    color: #1e1e2e;
+  }
+  63% {
+    color: #52404d;
+  }
+  75% {
+    color: #85606c;
+  }
+  87% {
+    color: #b8808c;
+  }
+  100% {
+    color: #eba0ac;
+  }
+}

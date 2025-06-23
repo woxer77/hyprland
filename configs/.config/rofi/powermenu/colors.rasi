@@ -1,0 +1,9 @@
+* {
+    background-normal:   #cdd6f410;
+    background-selected: #cdd6f430;
+    background:            black/95%;
+    foreground:          #cdd6f4;
+    selected:            #cdd6f4;
+    active:              #ABE9B3;
+    urgent:              #F28FAD;
+}

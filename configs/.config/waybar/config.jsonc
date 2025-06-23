@@ -1,0 +1,182 @@
+{
+  "layer": "top",
+  "position": "top",
+  "mod": "dock",
+  "exclusive": true,
+  "passthrough": false,
+  "gtk-layer-shell": true,
+  "modules-left": ["clock", "hyprland/language", "custom/weather", "hyprland/workspaces"],
+  "modules-center": ["hyprland/window"],
+  "modules-right": [
+    // "temperature#gpu",
+    // "cava",
+    // "mpris",
+    "custom/vpn",
+    "network",
+    "temperature#cpu",
+    "cpu",
+    "memory",
+    "pulseaudio" /* , "tray" */
+    // "custom/updates"
+  ],
+  "hyprland/window": {
+    "format": "{title}",
+    "icon": true,
+    "icon-size": 20
+  },
+
+  "hyprland/workspaces": {
+    "all-outputs": true,
+    "on-click": "activate",
+    "format": "{icon} {windows}",
+    "format-window-separator": " ",
+    "window-rewrite-default": "",
+    "window-rewrite": {
+      "title<.*youtube.*>": "", // Windows whose titles contain "youtube"
+      "title<.*twitch.*>": "",
+      "title<.*[Gg]ithub.*>": "", // if your regex engine supports case-insensitive flag `(?i)`
+      "code": "󰨞",
+      "brave": "",
+      "kitty": "",
+      "thunar": "",
+      "vlc": "󰕼",
+      "figma": "",
+      "spotify": "",
+      "calculator": "",
+      "pavucontrol": "",
+      "loupe": "",
+      "firefox": ""
+    }
+  },
+
+  "hyprland/language": {
+    "format-en": "EN",
+    "format-ru": "RU",
+    "on-click": "hyprctl switchxkblayout rdr-rainy-75 next"
+  },
+
+  "custom/vpn": {
+    "return-type": "json",
+    "exec": "~/.config/waybar/scripts/vpn-status.sh",
+    "on-click": "~/.config/waybar/scripts/vpn-toggle.sh",
+    "signal": 10
+  },
+
+  "custom/weather": {
+    "interval": 600,
+    "exec": "node ~/.config/waybar/scripts/weather.js", //"~/.config/waybar/scripts/waybar-wttr.py"
+    "return-type": "json"
+  },
+
+  "custom/updates": {
+    "interval": 3600,
+    "exec": "~/.config/waybar/scripts/updates-status.sh",
+    "on-click": "~/.config/waybar/scripts/update-packages.sh",
+    "return-type": "json"
+  },
+
+  /* "tray": {
+    "icon-size": 18,
+    "spacing": 10
+  }, */
+
+  "clock": {
+    "timezone": "Europe/Kyiv",
+    "format": "{:%H:%M:%S | %a, %b %d}",
+    "tooltip-format": "{calendar}",
+    "interval": 1,
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 4,
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#cdd6f4'><b>{}</b></span>",
+        "days": "<span color='#cdd6f4'><b>{}</b></span>",
+        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+        "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
+      }
+    },
+    "actions": {
+      "on-click-right": "mode",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
+    }
+  },
+
+  "pulseaudio": {
+    "format": "<span size='16000' foreground='#708090'>{icon}</span> {volume}%",
+    "tooltip": false,
+    "format-muted": "<span size='16000' foreground='#708090'>󰟎</span> muted",
+    "on-click": "pamixer -t",
+    "on-scroll-up": "/usr/local/bin/volume-up.sh",
+    "on-scroll-down": "/usr/local/bin/volume-down.sh",
+    "scroll-step": 5,
+    "format-icons": {
+      "default": ["󰋋"]
+    },
+    "on-click-right": "sh -c 'pavucontrol &'"
+  },
+
+  "network": {
+    "format": "<span size='16000' foreground='#b4befe'>󰛴</span> {bandwidthDownBits}",
+    "format-disconnected": "<span size='16000' foreground='#eba0ac'>󰱟</span>",
+    "tooltip-format-ethernet": "{ipaddr}/{cidr} 󰊗",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 2
+  },
+
+  /*   "mpris": {
+    "format": "{dynamic}",
+    "format-paused": "{player_icon} ",
+    "interval": 1,
+    "player-icons": {
+      "default": "▶",
+      "mpv": "🎵"
+    },
+    "status-icons": {
+      "paused": "⏸"
+    }
+  },
+ */
+  /* "cava": {
+    "framerate": 144,
+    "autosens": 1,
+    "bars": 12,
+    "bar_width": 1,
+    "method": "pipewire",
+    "source": "auto",
+    "reverse": false,
+    "bar_delimiter": 0,
+    "waves": true,
+    "input_delay": 2,
+    "hide_on_silence": true,
+    "sleep_timer": 5,
+    "format-icons": [" ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+  },
+ */
+  /* "temperature#gpu": {
+    "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input", // 0,1 - nvme | 2 gpu | 3 cpu | 4 motherboard
+    "format": "<span size='16000' foreground='#eadea2'></span> {temperatureC}°C",
+    "tooltip-format": "GPU temperature:  {temperatureC}°C",
+    "interval": 2,
+    "critical-threshold": 80
+  }, */
+
+  "temperature#cpu": {
+    "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input", // 0,1 - nvme | 2 gpu | 3 cpu | 4 motherboard
+    "format": "<span size='16000' foreground='#25bcf8'></span> {temperatureC}°C",
+    "tooltip-format": "CPU temperature:  {temperatureC}°C",
+    "interval": 3,
+    "critical-threshold": 80
+  },
+
+  "cpu": {
+    "interval": 3,
+    "format": "<span size='15000' foreground='#25bcf8'></span> {usage}%"
+  },
+
+  "memory": {
+    "interval": 3,
+    "format": "<span size='17000' foreground='#B388EB'>󰍛</span>{used: 0.2f} GiB"
+  }
+}
