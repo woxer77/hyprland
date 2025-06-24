@@ -1,41 +1,85 @@
 #!/bin/bash
 
-set -e
+set -ex  # Остановиться при ошибке и печатать команды
 
 USERNAME="woxer"
 USER_HOME="/home/$USERNAME"
-REPO_DIR="$(pwd)"
+REPO_DIR="$(pwd)"  # Предполагаем, что скрипт запускается из корня репозитория
 
+# Проверка и создание пользователя
+if ! id "$USERNAME" &>/dev/null; then
+  echo "[+] Creating user $USERNAME..."
+  useradd -m -G wheel -s /bin/bash "$USERNAME"
+fi
+
+# Убедимся, что домашняя директория существует
+if [ ! -d "$USER_HOME" ]; then
+  echo "[-] Home directory $USER_HOME does not exist"
+  exit 1
+fi
+
+# Обновление системы и установка базовых пакетов
 echo "[+] Installing base tools..."
-pacman -Sy --noconfirm git curl base base-devel
+pacman -Syu --noconfirm
+pacman -Sy --noconfirm git curl base base-devel sudo
 
-if ! command -v yay &> /dev/null; then
+# Установка yay, если не установлен
+if ! command -v yay &>/dev/null; then
   echo "[+] Installing yay..."
   cd /tmp
   git clone https://aur.archlinux.org/yay.git
-  chown -R "$USERNAME":"$USERNAME" yay
+  chown -R "$USERNAME:$USERNAME" yay
   cd yay
   sudo -u "$USERNAME" makepkg -si --noconfirm
 fi
 
-echo "[+] Installing pacman packages..."
-pacman -Sy --needed --noconfirm $(cat "$REPO_DIR/packages/pacman.txt")
+# Установка пакетов из pacman.txt
+if [ -f "$REPO_DIR/packages/pacman.txt" ]; then
+  echo "[+] Installing pacman packages..."
+  pacman -Sy --needed --noconfirm $(grep -vE '^\s*#|^\s*$' "$REPO_DIR/packages/pacman.txt")
+else
+  echo "[-] File packages/pacman.txt not found!"
+fi
 
-echo "[+] Installing yay packages..."
-sudo -u "$USERNAME" yay -Sy --needed --noconfirm $(cat "$REPO_DIR/packages/yay.txt")
+# Установка пакетов из yay.txt
+if [ -f "$REPO_DIR/packages/yay.txt" ]; then
+  echo "[+] Installing yay packages..."
+  sudo -u "$USERNAME" yay -Sy --needed --noconfirm $(grep -vE '^\s*#|^\s*$' "$REPO_DIR/packages/yay.txt")
+else
+  echo "[-] File packages/yay.txt not found!"
+fi
 
+# Копирование конфигов
 echo "[+] Copying configs..."
-cp -r "$REPO_DIR/configs/.config" "$USER_HOME/"
-cp "$REPO_DIR/configs/.bashrc" "$USER_HOME/.bashrc"
-chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config" "$USER_HOME/.bashrc"
+if [ -d "$REPO_DIR/configs/.config" ]; then
+  cp -r "$REPO_DIR/configs/.config" "$USER_HOME/"
+fi
 
+if [ -f "$REPO_DIR/configs/.bashrc" ]; then
+  cp "$REPO_DIR/configs/.bashrc" "$USER_HOME/.bashrc"
+fi
+
+# Права
+chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config" "$USER_HOME/.bashrc" 2>/dev/null || true
+
+# Копирование скриптов и обоев
 echo "[+] Copying scripts and wallpapers..."
-cp -r "$REPO_DIR/scripts" "$USER_HOME/scripts"
-cp -r "$REPO_DIR/Wallpapers" "$USER_HOME/Wallpapers"
-chown -R "$USERNAME:$USERNAME" "$USER_HOME/scripts" "$USER_HOME/Wallpapers"
+if [ -d "$REPO_DIR/scripts" ]; then
+  cp -r "$REPO_DIR/scripts" "$USER_HOME/scripts"
+fi
 
-echo "[+] Configuring sudoers..."
-echo -e "\n$USERNAME ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up /home/$USERNAME/.config/wireguard/wg-client.conf" >> /etc/sudoers
-echo "$USERNAME ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down /home/$USERNAME/.config/wireguard/wg-client.conf" >> /etc/sudoers
+if [ -d "$REPO_DIR/Wallpapers" ]; then
+  cp -r "$REPO_DIR/Wallpapers" "$USER_HOME/Wallpapers"
+fi
 
-echo "[✓] Hyprland environment installed and configured!"
+chown -R "$USERNAME:$USERNAME" "$USER_HOME/scripts" "$USER_HOME/Wallpapers" 2>/dev/null || true
+
+# Настройка sudoers для wireguard
+echo "[+] Configuring sudoers for wg-quick..."
+{
+  echo ""
+  echo "$USERNAME ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up /home/$USERNAME/.config/wireguard/wg-client.conf"
+  echo "$USERNAME ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down /home/$USERNAME/.config/wireguard/wg-client.conf"
+} >> /etc/sudoers
+
+echo "[✓] Hyprland environment installed and configured successfully!"
