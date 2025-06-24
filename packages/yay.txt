@@ -1,8 +1,6 @@
-dracula-gtk-theme
 figma-linux
 smem
 visual-studio-code-bin
 wg_tool
 rofi-lbonn-wayland-git
 waypaper
-figma-linux
