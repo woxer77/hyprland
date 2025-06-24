@@ -4,6 +4,7 @@ waybar
 wireguard-tools
 spotify-launcher
 vlc
+starship
 gnome-calculator
 pavucontrol
 nano
