@@ -2,9 +2,13 @@ hyprland
 kitty
 waybar
 wireguard-tools
+hyprpolkitagent
+gvfs
+thunar
 openresolv
 spotify-launcher
 openssh
+zoxide
 vlc
 starship
 rofi

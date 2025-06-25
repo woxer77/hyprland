@@ -66,6 +66,9 @@ if [ -f "$REPO_DIR/configs/.bashrc" ]; then
   cp "$REPO_DIR/configs/.bashrc" "$USER_HOME/.bashrc"
 fi
 
+  cp "$REPO_DIR/VSCode/keybindings.json" "$USER_HOME/.config/Code/User/"
+  cp "$REPO_DIR/configs/.bash_profile" "$USER_HOME/"
+
 # Права
 chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config" "$USER_HOME/.bashrc" 2>/dev/null || true
 

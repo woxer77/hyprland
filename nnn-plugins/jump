@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+if [ ! -p "$NNN_PIPE" ]; then
+    printf 'ERROR: NNN_PIPE is not set!\n'
+    read -r _
+    exit 2
+fi
+
+if command -v zoxide >/dev/null 2>&1; then
+    printf "jump to: "
+    IFS= read -r input  # сохраняем весь ввод, включая пробелы
+    odir="$(zoxide query -- "$input" 2>/dev/null)"
+
+    if [ -n "$odir" ] && [ -d "$odir" ]; then
+        printf "%s" "0c$odir" > "$NNN_PIPE"
+    else
+        printf 'zoxide: no match for "%s"\n' "$input"
+        read -r _
+        exit 1
+    fi
+fi

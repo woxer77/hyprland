@@ -5,10 +5,18 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-alias ls='ls --color=auto'
+export PATH="$PATH:/home/woxer/.local/bin"
+export NNN_PLUG='f:finder;v:imgview;j:jump;d:dragdrop'
+
+eval "$(starship init bash)"
+eval "$(zoxide init bash)"
+
+# alias ls='ls --color=auto'
+alias ls='n'
 alias grep='grep --color=auto'
 alias cls='clear'
 alias img='loupe'
+alias j='z'
 
 mem() {
   if [ -z "$1" ]; then
@@ -19,9 +27,21 @@ mem() {
   smem -c "pss command" | grep -i -- "$1" | awk '{sum+=$1} END {printf "%.2f MB\n", sum/1024}'
 }
 
-eval "$(starship init bash)"
+n ()
+{
+    [ "${NNNLVL:-0}" -eq 0 ] || {
+        echo "nnn is already running"
+        return
+    }
 
-# Created by `pipx` on 2025-05-23 16:30:18
-export PATH="$PATH:/home/woxer/.local/bin"
+    export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
 
-export PATH=$PATH:/home/woxer/.spicetify
+    command nnn "$@"
+
+    [ ! -f "$NNN_TMPFILE" ] || {
+        . "$NNN_TMPFILE"
+        rm -f -- "$NNN_TMPFILE" > /dev/null
+    }
+}
+
+
