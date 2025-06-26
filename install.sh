@@ -4,8 +4,8 @@ set -euo pipefail
 IFS=$'\n\t'
 
 USER_HOME="/home/$USER"
-REPO_DIR="$(pwd)/hyprland"
-WG_SCRIPT="$USER_HOME/scripts/wireguard-install.sh"
+REPO_DIR="$(pwd)"
+WG_SCRIPT="$REPO_DIR/scripts/wireguard-install.sh"
 
 # Ensure the script is not run as root
 if [ "$EUID" -eq 0 ]; then
@@ -13,16 +13,9 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 
-# Check internet connectivity
-echo "[+] Checking internet connection..."
-curl -s --head https://archlinux.org | head -n 1 | grep "200 OK" >/dev/null || {
-  echo "[-] No internet connection detected!"
-  exit 1
-}
-
 # System update and base tool installation
 echo "[+] Updating system and installing essential tools..."
-sudo pacman -Syu --noconfirm git curl base base-devel sudo
+sudo pacman -Syu --noconfirm git wget curl base base-devel sudo
 
 # Install yay if not already installed
 if ! command -v yay &>/dev/null; then
@@ -50,6 +43,9 @@ else
   echo "[-] File packages/yay.txt not found!"
 fi
 
+# Install wg_tool
+yay -S wg_tool --mflags --skipinteg
+
 # Download fonts
 echo "[+] Downloading RubikWetPaint font..."
 mkdir -p "$HOME/.local/share/fonts"
@@ -73,8 +69,6 @@ echo "[+] Installing custom user scripts..."
 if [ -d "$REPO_DIR/scripts" ]; then
   sudo cp "$REPO_DIR/scripts/volume-down.sh" /usr/local/bin/
   sudo cp "$REPO_DIR/scripts/volume-up.sh" /usr/local/bin/
-  sudo cp "$REPO_DIR/scripts/unzip_to_folder" /usr/local/bin/
-  sudo chmod +x /usr/local/bin/volume-*.sh /usr/local/bin/unzip_to_folder
 fi
 
 # Copy wallpapers
@@ -98,7 +92,7 @@ fi
 # Run WireGuard installation script
 if [[ -f "$WG_SCRIPT" ]]; then
   echo "[+] Running WireGuard setup script..."
-  bash "$WG_SCRIPT"
+  sudo bash "$WG_SCRIPT"
 else
   echo "[-] WireGuard script $WG_SCRIPT not found!"
 fi

@@ -34,6 +34,7 @@ shutdown now
 
 (Put the flash out)
 (launch pc)
+
 sudo nano /etc/default/grub
 GRUB_TIMEOUT=30
 (uncomment) #GRUB_DISABLE_OS_PROBER=false
@@ -70,7 +71,11 @@ efi    /efishellx64.efi
 ls -al
 blkid
 (remember PARTUUID of Windows EFI)
-reboot
+shutdown now
+
+(Put the flash out)
+(launch pc)
+
 (load as UEFI Shell x64)
 map
 (page up/page down)
@@ -81,8 +86,12 @@ su -
 cd /boot/loader/entries
 ls -al
 nano windows10.conf
+[start file]
 title    Windows 10
 efi      /efishellx64.efi
 options  -nointerrupt -nomap -noversion HD0a0b:EFI\Microsoft\Boot\Bootmgfw.efi
+[end file]
+nano /boot/loader/loader.conf
+timeout 15
 (reboot. done.)
-
+[/systemd-boot]
