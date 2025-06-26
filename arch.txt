@@ -1,0 +1,88 @@
+lsblk
+cfdisk /dev/<disk arch to be installed>nvme0n1
+Free space -> New -> 1G -> Type EFI
+Free space -> New -> All -> Write -> Quit
+lsblk
+mkfs.fat -F32 /dev/<1G>nvme0n1p5
+mkfs.ext4 /dev/<All>nvme0n1p6
+lsblk
+mount /dev/nvme0n1p6 /mnt
+mkdir /mnt/boot
+mount /dev/nvme0n1p5 /mnt/boot
+lsblk
+archinstall
+Mirrors -> Germany, Netherlands, Poland
+Disk configuration -> Partition -> Pre-mounted configuration -> /mnt
+Systemd-boot/Grub
+Hostname -> archlinux
+Root password -> ...
+User account -> woxer -> pass ... -> sudo +
+Profile -> Minimal
+Network configuration -> Network manager
+Timezone -> Europe/Kyiv
+Save configuration
+Would you like to chroot into newly... -> Yes
+pacman -Syu
+
+[grub]
+pacman -S grub efibootmgr dosfstools mtools
+lsblk
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+exit
+shutdown now
+
+(Put the flash out)
+(launch pc)
+sudo nano /etc/default/grub
+GRUB_TIMEOUT=30
+(uncomment) #GRUB_DISABLE_OS_PROBER=false
+sudo pacman -S os-prober
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+(does Windows found?)
+yes: good
+no:
+sudo fdisk -l
+(search for Type BIOS boot | Size 100M)
+sudo blkid /dev/<Device>sda1
+(copy UUID)
+sudo nano /etc/grub.d/40_custom
+(paste:)
+menuentry "Windows" --class windows --class os {
+  search --fs-uuid --no-floppy --set=root <<<<UUID_Here>>>>
+  chainloader (${root})/EFI/Microsoft/Boot/bootmgfw.efi
+}
+sudo update-grub
+(reboot - all good)
+[/grub]
+
+[systemd-boot]
+fdisk -l
+sudo pacman -S edk2-shell
+cp /usr/share/edk2-shell/x64/Shell.efi /boot/efishellx64.efi
+cd /boot/loader/entries
+ls -al
+nano efishellx64.conf
+[start file]
+title  UEFI Shell x64
+efi    /efishellx64.efi
+[end file]
+ls -al
+blkid
+(remember PARTUUID of Windows EFI)
+reboot
+(load as UEFI Shell x64)
+map
+(page up/page down)
+(search for PARTUUID remembered)
+(remember HD0a0b:;BLK1: |  in the part FS0: Alias(s): ...)
+reset
+su -
+cd /boot/loader/entries
+ls -al
+nano windows10.conf
+title    Windows 10
+efi      /efishellx64.efi
+options  -nointerrupt -nomap -noversion HD0a0b:EFI\Microsoft\Boot\Bootmgfw.efi
+(reboot. done.)
+

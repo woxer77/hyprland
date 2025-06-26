@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+
+# Custom NNN_OPENER - Arch/Hyprland version
+
+file="$1"
+basename=$(basename -- "$file")
+
+# Get extension only if filename contains a dot not at the start
+if [ "${basename#.*}" = "$basename" ] && [ "$basename" != *.* ]; then
+    ext_lc=""
+else
+    ext="${basename##*.}"
+    ext_lc=$(printf '%s' "$ext" | tr '[:upper:]' '[:lower:]')
+fi
+
+open_with() {
+    # No extension or dotfile without extension
+    if [ -z "$ext_lc" ] || { [ "$basename" != "${basename#.*}" ] && [ "$basename" != *.*.* ]; }; then
+        setsid -f code "$file" >/dev/null 2>&1
+        return
+    fi
+
+    case "$ext_lc" in
+        # Archives
+        zip|tar|gz|bz2|xz|tgz|rar|7z) setsid -f 7z x "$file" >/dev/null 2>&1 ;;
+
+        # MS Office
+        doc|docx|xls|xlsx|ppt|pptx) setsid -f libreoffice "$file" >/dev/null 2>&1 ;;
+
+        # Documents
+        pdf|epub) setsid -f firefox "$file" >/dev/null 2>&1 ;;
+
+        # Audio
+        mp3|flac|wav|aac|ogg|m4a|opus) setsid -f vlc "$file" >/dev/null 2>&1 ;;
+
+        # Video
+        mp4|mkv|webm|avi|mov|3gp|flv) setsid -f vlc "$file" >/dev/null 2>&1 ;;
+
+        # Images
+        jpg|jpeg|png|gif|bmp|webp|tiff|svg) setsid -f loupe "$file" >/dev/null 2>&1 ;;
+
+        # Code, configs, text
+        c|cpp|h|hpp|py|js|ts|go|rs|java|sh|lua|html|css|php|rb|pl|toml|ini|conf|env|json|yaml|yml|txt|md|log|csv|Makefile|Dockerfile) \
+            setsid -f code "$file" >/dev/null 2>&1 ;;
+
+        # Fallback
+        *) setsid -f xdg-open "$file" >/dev/null 2>&1 ;;
+    esac
+}
+
+[ -f "$file" ] && open_with

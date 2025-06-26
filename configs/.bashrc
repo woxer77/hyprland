@@ -6,7 +6,10 @@
 [[ $- != *i* ]] && return
 
 export PATH="$PATH:/home/woxer/.local/bin"
-export NNN_PLUG='f:finder;v:imgview;j:jump;d:dragdrop'
+export NNN_PLUG='j:jump;p:preview-tui'
+export NNN_OPENER="$HOME/.config/nnn/plugins/nuke"
+export NNN_FIFO=/tmp/nnn.fifo
+export NNN_SPLIT="v"
 
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
@@ -36,7 +39,7 @@ n ()
 
     export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
 
-    command nnn "$@"
+    command nnn -P p "$@"
 
     [ ! -f "$NNN_TMPFILE" ] || {
         . "$NNN_TMPFILE"

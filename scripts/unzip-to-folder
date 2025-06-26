@@ -1,5 +1,0 @@
-#!/bin/bash
-zipfile="$1"
-dir="${zipfile%.zip}"
-mkdir -p "$dir"
-unzip -q "$zipfile" -d "$dir"

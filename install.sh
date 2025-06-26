@@ -1,106 +1,106 @@
 #!/bin/bash
 
-set -ex  # Остановиться при ошибке и печатать команды
+set -euo pipefail
+IFS=$'\n\t'
 
-USERNAME="woxer"
-USER_HOME="/home/$USERNAME"
-REPO_DIR="$(pwd)/hyprland"  # Предполагаем, что скрипт запускается из корня репозитория
+USER_HOME="/home/$USER"
+REPO_DIR="$(pwd)/hyprland"
 WG_SCRIPT="$USER_HOME/scripts/wireguard-install.sh"
 
-# Проверка и создание пользователя
-if ! id "$USERNAME" &>/dev/null; then
-  echo "[+] Creating user $USERNAME..."
-  useradd -m -G wheel -s /bin/bash "$USERNAME"
-fi
-
-# Убедимся, что домашняя директория существует
-if [ ! -d "$USER_HOME" ]; then
-  echo "[-] Home directory $USER_HOME does not exist"
+# Ensure the script is not run as root
+if [ "$EUID" -eq 0 ]; then
+  echo "[-] Do not run this script as root. Use a normal user with sudo privileges."
   exit 1
 fi
 
-# Обновление системы и установка базовых пакетов
-echo "[+] Installing base tools..."
-pacman -Syu --noconfirm
-pacman -Sy --noconfirm git curl base base-devel sudo
+# Check internet connectivity
+echo "[+] Checking internet connection..."
+curl -s --head https://archlinux.org | head -n 1 | grep "200 OK" >/dev/null || {
+  echo "[-] No internet connection detected!"
+  exit 1
+}
 
-# Установка yay, если не установлен
+# System update and base tool installation
+echo "[+] Updating system and installing essential tools..."
+sudo pacman -Syu --noconfirm git curl base base-devel sudo
+
+# Install yay if not already installed
 if ! command -v yay &>/dev/null; then
-  echo "[+] Installing yay..."
-  cd /tmp
-  git clone https://aur.archlinux.org/yay.git
-  chown -R "$USERNAME:$USERNAME" yay
-  cd yay
-  sudo -u "$USERNAME" makepkg -si --noconfirm
+  echo "[+] Installing yay (AUR helper)..."
+  git clone https://aur.archlinux.org/yay.git /tmp/yay
+  cd /tmp/yay
+  makepkg -si --noconfirm
+  cd -
+  rm -rf /tmp/yay
 fi
 
-# Установка пакетов из pacman.txt
+# Install packages from pacman.txt
 if [ -f "$REPO_DIR/packages/pacman.txt" ]; then
-  echo "[+] Installing pacman packages..."
-  pacman -Sy --needed --noconfirm $(grep -vE '^\s*#|^\s*$' "$REPO_DIR/packages/pacman.txt")
+  echo "[+] Installing packages from pacman.txt..."
+  sudo pacman -Sy --needed --noconfirm $(grep -vE '^\s*#|^\s*$' "$REPO_DIR/packages/pacman.txt")
 else
   echo "[-] File packages/pacman.txt not found!"
 fi
 
-# Установка пакетов из yay.txt
+# Install packages from yay.txt
 if [ -f "$REPO_DIR/packages/yay.txt" ]; then
-  echo "[+] Installing yay packages..."
-  sudo -u "$USERNAME" yay -Sy --needed --noconfirm $(grep -vE '^\s*#|^\s*$' "$REPO_DIR/packages/yay.txt")
+  echo "[+] Installing AUR packages from yay.txt..."
+  yay -Sy --needed --noconfirm $(grep -vE '^\s*#|^\s*$' "$REPO_DIR/packages/yay.txt")
 else
   echo "[-] File packages/yay.txt not found!"
 fi
 
-# Downloading fonts from Google Fonts
-mkdir -p ~/.local/share/fonts
-cd ~/.local/share/fonts
-wget https://github.com/google/fonts/raw/main/ofl/rubikwetpaint/RubikWetPaint-Regular.ttf
+# Download fonts
+echo "[+] Downloading RubikWetPaint font..."
+mkdir -p "$HOME/.local/share/fonts"
+cd "$HOME/.local/share/fonts"
+wget -q https://github.com/google/fonts/raw/main/ofl/rubikwetpaint/RubikWetPaint-Regular.ttf
 
+# Copy configuration files (after packages are installed)
+echo "[+] Copying configuration files..."
+[ -d "$REPO_DIR/configs/.config" ] && cp -r "$REPO_DIR/configs/.config" "$HOME/"
+[ -f "$REPO_DIR/configs/.bashrc" ] && cp "$REPO_DIR/configs/.bashrc" "$HOME/.bashrc"
+[ -f "$REPO_DIR/configs/.bash_profile" ] && cp "$REPO_DIR/configs/.bash_profile" "$HOME/.bash_profile"
 
-# Копирование конфигов
-echo "[+] Copying configs..."
-if [ -d "$REPO_DIR/configs/.config" ]; then
-  cp -r "$REPO_DIR/configs/.config" "$USER_HOME/"
-fi
+# Fix config permissions
+chmod -R 755 "$HOME/.config" 2>/dev/null || true
 
-if [ -f "$REPO_DIR/configs/.bashrc" ]; then
-  cp "$REPO_DIR/configs/.bashrc" "$USER_HOME/.bashrc"
-fi
+# Ensure Downloads directory exists
+mkdir -p "$HOME/Downloads"
 
-  cp "$REPO_DIR/VSCode/keybindings.json" "$USER_HOME/.config/Code/User/"
-  cp "$REPO_DIR/configs/.bash_profile" "$USER_HOME/"
-
-# Права
-chown -R "$USERNAME:$USERNAME" "$USER_HOME/.config" "$USER_HOME/.bashrc" 2>/dev/null || true
-
-mkdir -p ~/Downloads
-
-# Копирование скриптов и обоев
-echo "[+] Copying scripts and wallpapers..."
+# Copy custom scripts to /usr/local/bin
+echo "[+] Installing custom user scripts..."
 if [ -d "$REPO_DIR/scripts" ]; then
-  mv "$REPO_DIR/scripts/volume-down.sh" /usr/local/bin/
-  mv "$REPO_DIR/scripts/volume-up.sh" /usr/local/bin/
-  mv "$REPO_DIR/scripts/unzip_to_folder" /usr/local/bin/
+  sudo cp "$REPO_DIR/scripts/volume-down.sh" /usr/local/bin/
+  sudo cp "$REPO_DIR/scripts/volume-up.sh" /usr/local/bin/
+  sudo cp "$REPO_DIR/scripts/unzip_to_folder" /usr/local/bin/
+  sudo chmod +x /usr/local/bin/volume-*.sh /usr/local/bin/unzip_to_folder
 fi
+
+# Copy wallpapers
 if [ -d "$REPO_DIR/Wallpapers" ]; then
-  cp -r "$REPO_DIR/Wallpapers" "$USER_HOME/Wallpapers"
+  cp -r "$REPO_DIR/Wallpapers" "$HOME/Wallpapers"
 fi
 
-chown -R "$USERNAME:$USERNAME" "$USER_HOME/scripts" "$USER_HOME/Wallpapers" 2>/dev/null || true
+# Configure sudoers for WireGuard without password
+echo "[+] Configuring sudoers for WireGuard..."
+WG_CONF="$HOME/.config/wireguard/wg-client.conf"
+SUDOERS_LINE_UP="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up $WG_CONF"
+SUDOERS_LINE_DOWN="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down $WG_CONF"
 
-# Настройка sudoers для wireguard
-echo "[+] Configuring sudoers for wg-quick..."
-{
-  echo ""
-  echo "$USERNAME ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up /home/$USERNAME/.config/wireguard/wg-client.conf"
-  echo "$USERNAME ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down /home/$USERNAME/.config/wireguard/wg-client.conf"
-} >> /etc/sudoers
+if ! sudo grep -qxF "$SUDOERS_LINE_UP" /etc/sudoers; then
+  echo "$SUDOERS_LINE_UP" | sudo tee -a /etc/sudoers
+fi
+if ! sudo grep -qxF "$SUDOERS_LINE_DOWN" /etc/sudoers; then
+  echo "$SUDOERS_LINE_DOWN" | sudo tee -a /etc/sudoers
+fi
 
-# Инициализируем wireguard
+# Run WireGuard installation script
 if [[ -f "$WG_SCRIPT" ]]; then
-    echo "Launching WireGuard installation..."
-    bash "$WG_SCRIPT"
+  echo "[+] Running WireGuard setup script..."
+  bash "$WG_SCRIPT"
 else
-    echo "Error: Script $WG_SCRIPT wasn't found!"
+  echo "[-] WireGuard script $WG_SCRIPT not found!"
 fi
 
-echo "[✓] Hyprland environment installed and configured successfully!"
+echo "[✓] Hyprland environment successfully installed and configured!"

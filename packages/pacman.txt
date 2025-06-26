@@ -2,6 +2,7 @@ hyprland
 kitty
 waybar
 wireguard-tools
+7zip
 hyprpolkitagent
 gvfs
 thunar
@@ -32,7 +33,6 @@ grim
 amd-ucode
 gst-libav
 wget
-unzip
 linux
 linux-headers
 linux-firmware
