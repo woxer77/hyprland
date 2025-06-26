@@ -4,5 +4,5 @@
 git clone https://github.com/woxer77/hyprland.git
 cd hyprland
 chmod +x install.sh
-sudo ./install.sh
+./install.sh
 </pre>
