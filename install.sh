@@ -55,6 +55,7 @@ wget -q https://github.com/google/fonts/raw/main/ofl/rubikwetpaint/RubikWetPaint
 # Copy configuration files (after packages are installed)
 echo "[+] Copying configuration files..."
 [ -d "$REPO_DIR/configs/.config" ] && cp -r "$REPO_DIR/configs/.config" "$HOME/"
+[ -d "$REPO_DIR/configs/.spicetify" ] && cp -r "$REPO_DIR/configs/.spicetify" "$HOME/"
 [ -f "$REPO_DIR/configs/.bashrc" ] && cp "$REPO_DIR/configs/.bashrc" "$HOME/.bashrc"
 [ -f "$REPO_DIR/configs/.bash_profile" ] && cp "$REPO_DIR/configs/.bash_profile" "$HOME/.bash_profile"
 
@@ -96,5 +97,13 @@ if [[ -f "$WG_SCRIPT" ]]; then
 else
   echo "[-] WireGuard script $WG_SCRIPT not found!"
 fi
+
+# Install Spicetify CLI
+echo "[+] Installing Spicetify CLI..."
+curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
+
+# Install Spicetify Marketplace
+echo "[+] Installing Spicetify Marketplace..."
+curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
 
 echo "[✓] Hyprland environment successfully installed and configured!"

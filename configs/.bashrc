@@ -10,6 +10,7 @@ export NNN_PLUG='j:jump;p:preview-tui'
 export NNN_OPENER="$HOME/.config/nnn/plugins/nuke"
 export NNN_FIFO=/tmp/nnn.fifo
 export NNN_SPLIT="v"
+export PATH=$PATH:/home/woxer/.spicetify
 
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
@@ -46,5 +47,3 @@ n ()
         rm -f -- "$NNN_TMPFILE" > /dev/null
     }
 }
-
-
