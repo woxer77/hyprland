@@ -14,8 +14,8 @@ export NNN_SPLIT="v"
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
 
-# alias ls='ls --color=auto'
-alias ls='n'
+alias ls='ls --color=auto'
+#alias ls='n'
 alias grep='grep --color=auto'
 alias cls='clear'
 alias img='loupe'
