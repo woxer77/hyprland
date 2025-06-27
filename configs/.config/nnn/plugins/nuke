@@ -40,7 +40,7 @@ open_with() {
         jpg|jpeg|png|gif|bmp|webp|tiff|svg) setsid -f loupe "$file" >/dev/null 2>&1 ;;
 
         # Code, configs, text
-        c|cpp|h|hpp|py|js|ts|go|rs|java|sh|lua|html|css|php|rb|pl|toml|ini|conf|env|json|yaml|yml|txt|md|log|csv|Makefile|Dockerfile) \
+        c|cpp|h|hpp|py|js|ts|go|rs|java|sh|lua|html|css|php|rb|pl|toml|ini|conf|env|json|yaml|yml|txt|md|log|csv|Makefile|Dockerfile|rasi) \
             setsid -f code "$file" >/dev/null 2>&1 ;;
 
         # Fallback
