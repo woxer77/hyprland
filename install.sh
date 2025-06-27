@@ -55,7 +55,6 @@ wget -q https://github.com/google/fonts/raw/main/ofl/rubikwetpaint/RubikWetPaint
 # Copy configuration files (after packages are installed)
 echo "[+] Copying configuration files..."
 [ -d "$REPO_DIR/configs/.config" ] && cp -r "$REPO_DIR/configs/.config" "$HOME/"
-[ -d "$REPO_DIR/configs/.spicetify" ] && cp -r "$REPO_DIR/configs/.spicetify" "$HOME/"
 [ -f "$REPO_DIR/configs/.bashrc" ] && cp "$REPO_DIR/configs/.bashrc" "$HOME/.bashrc"
 [ -f "$REPO_DIR/configs/.bash_profile" ] && cp "$REPO_DIR/configs/.bash_profile" "$HOME/.bash_profile"
 
@@ -77,33 +76,48 @@ if [ -d "$REPO_DIR/Wallpapers" ]; then
   cp -r "$REPO_DIR/Wallpapers" "$HOME/Wallpapers"
 fi
 
-# Configure sudoers for WireGuard without password
-echo "[+] Configuring sudoers for WireGuard..."
-WG_CONF="$HOME/.config/wireguard/wg-client.conf"
-SUDOERS_LINE_UP="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up $WG_CONF"
-SUDOERS_LINE_DOWN="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down $WG_CONF"
+# Prompt for WireGuard setup
+read -rp "[?] Do you want to install and configure WireGuard? [y/N]: " INSTALL_WG
+if [[ "$INSTALL_WG" =~ ^[Yy]$ ]]; then
+  echo "[+] Configuring sudoers for WireGuard..."
+  WG_CONF="$HOME/.config/wireguard/wg-client.conf"
+  SUDOERS_LINE_UP="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up $WG_CONF"
+  SUDOERS_LINE_DOWN="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down $WG_CONF"
 
-if ! sudo grep -qxF "$SUDOERS_LINE_UP" /etc/sudoers; then
-  echo "$SUDOERS_LINE_UP" | sudo tee -a /etc/sudoers
-fi
-if ! sudo grep -qxF "$SUDOERS_LINE_DOWN" /etc/sudoers; then
-  echo "$SUDOERS_LINE_DOWN" | sudo tee -a /etc/sudoers
-fi
+  if ! sudo grep -qxF "$SUDOERS_LINE_UP" /etc/sudoers; then
+    echo "$SUDOERS_LINE_UP" | sudo tee -a /etc/sudoers
+  fi
+  if ! sudo grep -qxF "$SUDOERS_LINE_DOWN" /etc/sudoers; then
+    echo "$SUDOERS_LINE_DOWN" | sudo tee -a /etc/sudoers
+  fi
 
-# Run WireGuard installation script
-if [[ -f "$WG_SCRIPT" ]]; then
-  echo "[+] Running WireGuard setup script..."
-  sudo bash "$WG_SCRIPT"
+  if [[ -f "$WG_SCRIPT" ]]; then
+    echo "[+] Running WireGuard setup script..."
+    sudo bash "$WG_SCRIPT"
+  else
+    echo "[-] WireGuard script $WG_SCRIPT not found!"
+  fi
 else
-  echo "[-] WireGuard script $WG_SCRIPT not found!"
+  echo "[!] Skipping WireGuard installation."
 fi
 
-# Install Spicetify CLI
-echo "[+] Installing Spicetify CLI..."
-curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
+# Prompt for Spicetify setup
+read -rp "[?] Do you want to install Spicetify and Marketplace? [y/N]: " INSTALL_SPICETIFY
+if [[ "$INSTALL_SPICETIFY" =~ ^[Yy]$ ]]; then
+  echo "[+] Installing Spicetify CLI..."
+  curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
 
-# Install Spicetify Marketplace
-echo "[+] Installing Spicetify Marketplace..."
-curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
+  echo "[+] Installing Spicetify Marketplace..."
+  curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
+
+  echo "[+] Copying Spicetify configuration..."
+  if [ -d "$REPO_DIR/configs/.spicetify" ]; then
+    cp -r "$REPO_DIR/configs/.spicetify" "$HOME/"
+  else
+    echo "[-] Spicetify config directory not found!"
+  fi
+else
+  echo "[!] Skipping Spicetify installation."
+fi
 
 echo "[✓] Hyprland environment successfully installed and configured!"
