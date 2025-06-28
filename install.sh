@@ -120,4 +120,7 @@ else
   echo "[!] Skipping Spicetify installation."
 fi
 
+# reflector configuration (arch servers installation)
+sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+
 echo "[✓] Hyprland environment successfully installed and configured!"

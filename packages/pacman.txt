@@ -2,6 +2,8 @@ hyprland
 kitty
 waybar
 wireguard-tools
+libreoffice-still
+reflector
 7zip
 hyprpolkitagent
 gvfs
