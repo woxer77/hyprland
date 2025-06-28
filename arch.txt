@@ -53,7 +53,7 @@ menuentry "Windows" --class windows --class os {
   search --fs-uuid --no-floppy --set=root <<<<UUID_Here>>>>
   chainloader (${root})/EFI/Microsoft/Boot/bootmgfw.efi
 }
-sudo update-grub
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 (reboot - all good)
 [/grub]
 
