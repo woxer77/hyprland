@@ -76,21 +76,32 @@ if [ -d "$REPO_DIR/Wallpapers" ]; then
   cp -r "$REPO_DIR/Wallpapers" "$HOME/Wallpapers"
 fi
 
+# Configuring wireguard client
+echo "[+] Configuring sudoers for WireGuard..."
+WG_CONF="$HOME/.config/wireguard/wg0.conf"
+SUDOERS_LINE_UP="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up $WG_CONF"
+SUDOERS_LINE_DOWN="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down $WG_CONF"
+
+if ! sudo grep -qxF "$SUDOERS_LINE_UP" /etc/sudoers; then
+  echo "$SUDOERS_LINE_UP" | sudo tee -a /etc/sudoers
+fi
+if ! sudo grep -qxF "$SUDOERS_LINE_DOWN" /etc/sudoers; then
+  echo "$SUDOERS_LINE_DOWN" | sudo tee -a /etc/sudoers
+fi
+chmod 600 $WG_CONF
+
+# Copy rt_tables file for stable wireguard VPN work
+RT_TABLES_FILE="/etc/iproute2/rt_tables"
+if [ -f "$RT_TABLES_FILE" ]; then
+  echo "File $RT_TABLES_FILE already exists."
+else
+  sudo cp "$REPO_DIR/etc/rt_tables" "$RT_TABLES_FILE"
+  echo "File has been successfully copied."
+fi
+
 # Prompt for WireGuard setup
-read -rp "[?] Do you want to install and configure WireGuard? [y/N]: " INSTALL_WG
+read -rp "[?] Do you want to install and configure WireGuard as a server? [y/N]: " INSTALL_WG
 if [[ "$INSTALL_WG" =~ ^[Yy]$ ]]; then
-  echo "[+] Configuring sudoers for WireGuard..."
-  WG_CONF="$HOME/.config/wireguard/wg-client.conf"
-  SUDOERS_LINE_UP="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up $WG_CONF"
-  SUDOERS_LINE_DOWN="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down $WG_CONF"
-
-  if ! sudo grep -qxF "$SUDOERS_LINE_UP" /etc/sudoers; then
-    echo "$SUDOERS_LINE_UP" | sudo tee -a /etc/sudoers
-  fi
-  if ! sudo grep -qxF "$SUDOERS_LINE_DOWN" /etc/sudoers; then
-    echo "$SUDOERS_LINE_DOWN" | sudo tee -a /etc/sudoers
-  fi
-
   if [[ -f "$WG_SCRIPT" ]]; then
     echo "[+] Running WireGuard setup script..."
     sudo bash "$WG_SCRIPT"

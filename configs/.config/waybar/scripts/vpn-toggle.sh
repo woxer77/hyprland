@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG_PATH="/home/woxer/.config/wireguard/wg-client.conf"
+CONFIG_PATH="/home/woxer/.config/wireguard/wg0.conf"
 WG_INTERFACE=$(basename "$CONFIG_PATH" .conf)
 
 if ip link show "$WG_INTERFACE" &> /dev/null; then
