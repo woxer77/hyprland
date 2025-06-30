@@ -5,7 +5,7 @@ IFS=$'\n\t'
 
 USER_HOME="/home/$USER"
 REPO_DIR="$(pwd)"
-WG_SCRIPT="$REPO_DIR/scripts/wireguard-install.sh"
+#WG_SCRIPT="$REPO_DIR/scripts/wireguard-install.sh"
 
 # Ensure the script is not run as root
 if [ "$EUID" -eq 0 ]; then
@@ -44,7 +44,7 @@ else
 fi
 
 # Install wg_tool
-yay -S wg_tool --mflags --skipinteg
+#yay -Sy --needed --mflags --skipinteg wg_tool
 
 # Download fonts
 echo "[+] Downloading RubikWetPaint font..."
@@ -77,59 +77,63 @@ if [ -d "$REPO_DIR/Wallpapers" ]; then
 fi
 
 # Configuring wireguard client
-echo "[+] Configuring sudoers for WireGuard..."
-WG_CONF="$HOME/.config/wireguard/wg0.conf"
-SUDOERS_LINE_UP="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up $WG_CONF"
-SUDOERS_LINE_DOWN="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down $WG_CONF"
+#echo "[+] Configuring sudoers for WireGuard..."
+#WG_CONF="$HOME/.config/wireguard/wg0.conf"
+#SUDOERS_LINE_UP="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up $WG_CONF"
+#SUDOERS_LINE_DOWN="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down $WG_CONF"
 
-if ! sudo grep -qxF "$SUDOERS_LINE_UP" /etc/sudoers; then
-  echo "$SUDOERS_LINE_UP" | sudo tee -a /etc/sudoers
-fi
-if ! sudo grep -qxF "$SUDOERS_LINE_DOWN" /etc/sudoers; then
-  echo "$SUDOERS_LINE_DOWN" | sudo tee -a /etc/sudoers
-fi
-chmod 600 $WG_CONF
+#if ! sudo grep -qxF "$SUDOERS_LINE_UP" /etc/sudoers; then
+#  echo "$SUDOERS_LINE_UP" | sudo tee -a /etc/sudoers
+#fi
+#if ! sudo grep -qxF "$SUDOERS_LINE_DOWN" /etc/sudoers; then
+#  echo "$SUDOERS_LINE_DOWN" | sudo tee -a /etc/sudoers
+#fi
+#chmod 600 $WG_CONF
 
 # Copy rt_tables file for stable wireguard VPN work
-RT_TABLES_FILE="/etc/iproute2/rt_tables"
-if [ -f "$RT_TABLES_FILE" ]; then
-  echo "File $RT_TABLES_FILE already exists."
-else
-  sudo cp "$REPO_DIR/etc/rt_tables" "$RT_TABLES_FILE"
-  echo "File has been successfully copied."
-fi
+#RT_TABLES_FILE="/etc/iproute2/rt_tables"
+#if [ -f "$RT_TABLES_FILE" ]; then
+#  echo "File $RT_TABLES_FILE already exists."
+#else
+#  sudo mkdir -p /etc/iproute2
+#  sudo cp "$REPO_DIR/etc/rt_tables" "$RT_TABLES_FILE"
+#  echo "File has been successfully copied."
+#fi
 
 # Prompt for WireGuard setup
-read -rp "[?] Do you want to install and configure WireGuard as a server? [y/N]: " INSTALL_WG
-if [[ "$INSTALL_WG" =~ ^[Yy]$ ]]; then
-  if [[ -f "$WG_SCRIPT" ]]; then
-    echo "[+] Running WireGuard setup script..."
-    sudo bash "$WG_SCRIPT"
-  else
-    echo "[-] WireGuard script $WG_SCRIPT not found!"
-  fi
-else
-  echo "[!] Skipping WireGuard installation."
-fi
+#read -rp "[?] Do you want to install and configure WireGuard as a server? [y/N]: " INSTALL_WG
+#if [[ "$INSTALL_WG" =~ ^[Yy]$ ]]; then
+#  if [[ -f "$WG_SCRIPT" ]]; then
+#    echo "[+] Running WireGuard setup script..."
+#    sudo bash "$WG_SCRIPT"
+#  else
+#    echo "[-] WireGuard script $WG_SCRIPT not found!"
+#  fi
+#else
+#  echo "[!] Skipping WireGuard installation."
+#fi
 
 # Prompt for Spicetify setup
-read -rp "[?] Do you want to install Spicetify and Marketplace? [y/N]: " INSTALL_SPICETIFY
-if [[ "$INSTALL_SPICETIFY" =~ ^[Yy]$ ]]; then
-  echo "[+] Installing Spicetify CLI..."
-  curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
+#read -rp "[?] Do you want to install Spicetify? [y/N]: " INSTALL_SPICETIFY
+#if [[ "$INSTALL_SPICETIFY" =~ ^[Yy]$ ]]; then
+#  echo "[+] Installing Spicetify CLI..."
+#  curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
+  # !!!!!! need to startup spotify before marketpace installation
+  #echo "[+] Installing Spicetify Marketplace..."
+  #curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
 
-  echo "[+] Installing Spicetify Marketplace..."
-  curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
+#  echo "[+] Copying Spicetify configuration..."
+#  if [ -d "$REPO_DIR/configs/.spicetify" ]; then
+#    cp -r "$REPO_DIR/configs/.spicetify" "$HOME/"
+#  else
+#    echo "[-] Spicetify config directory not found!"
+#  fi
+#else
+#  echo "[!] Skipping Spicetify installation."
+#fi
 
-  echo "[+] Copying Spicetify configuration..."
-  if [ -d "$REPO_DIR/configs/.spicetify" ]; then
-    cp -r "$REPO_DIR/configs/.spicetify" "$HOME/"
-  else
-    echo "[-] Spicetify config directory not found!"
-  fi
-else
-  echo "[!] Skipping Spicetify installation."
-fi
+#spicetify config custom_apps lyrics-plus
+#spicetify apply
 
 # reflector configuration (arch servers installation)
 sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
