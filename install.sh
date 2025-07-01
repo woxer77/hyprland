@@ -115,13 +115,13 @@ sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
 # Configuring sudoers
 echo "[+] Configuring sudoers..."
-echo -e "\n$USER ALL=(ALL) NOPASSWD: /usr/bin/killall openvpn, /usr/sbin/openvpn --config $USER_HOME/.config/openvpn/openvpn.ovpn --daemon" >> /etc/sudoers
+echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/killall openvpn, /usr/sbin/openvpn --config $USER_HOME/.config/openvpn/openvpn.ovpn --daemon" | sudo tee -a /etc/sudoers
 
 # Automatically mount disks so they can be accessible
-echo -e "\n# Entry for 1TB HDD (sda1)"
-echo -e "\nUUID=9E9A93F69A93C8E3 /mnt/d ntfs defaults,nofail 0 0" >> /etc/fstab
-echo -e "\n# Entry for 1TB NVMe (nvme1n1p5)"
-echo -e "\nUUID=6A18EBE718EBAFED /mnt/e ntfs defaults,nofail 0 0" >> /etc/fstab
+echo "# Entry for 1TB HDD (sda1)" | sudo tee -a /etc/fstab 
+echo "UUID=9E9A93F69A93C8E3 /mnt/d ntfs defaults,nofail 0 0" | sudo tee -a /etc/fstab
+echo "# Entry for 1TB NVMe (nvme1n1p5)" | sudo tee -a /etc/fstab
+echo "UUID=6A18EBE718EBAFED /mnt/e ntfs defaults,nofail 0 0" | sudo tee -a /etc/fstab
 
 # Success
 
