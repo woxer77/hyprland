@@ -113,6 +113,9 @@ fi
 # reflector configuration (arch servers installation)
 sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
+echo "[+] Configuring sudoers..."
+echo -e "\n$USER ALL=(ALL) NOPASSWD: /usr/bin/killall openvpn, /usr/sbin/openvpn --config $USER_HOME/.config/openvpn/openvpn.ovpn --daemon" >> /etc/sudoers
+
 echo "[!] REMINDER: For OpenVPN place '.ovpn' configuration file in '$HOME/.config/openvpn/openvpn.ovpn'"
 echo "[!] REMINDER: Don't forget to configure .ssh for GitHub"
 echo "[!] REMINDER: Don't forget to put Gemini Api Key in .bashrc"
