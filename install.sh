@@ -80,36 +80,6 @@ else
   echo "[-] Skipping Gemini CLI installation."
 fi
 
-# Ask before installing Spicetify
-read -p "[?] Do you want to install and configure Spicetify? (y/N): " spicetify_choice
-if [[ "$spicetify_choice" =~ ^[Yy]$ ]]; then
-  # Create dummy Spotify config for Spicetify
-  echo "[+] Creating dummy Spotify config for Spicetify..."
-  mkdir -p "$HOME/.config/spotify"
-  touch "$HOME/.config/spotify/prefs"
-
-  # Install and configure Spicetify
-  echo "[+] Installing Spicetify CLI..."
-  curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
-
-  echo "[+] Installing Spicetify Marketplace..."
-  curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
-
-  echo "[+] Copying Spicetify configuration..."
-  if [ -d "$REPO_DIR/configs/.spicetify" ]; then
-    cp -r "$REPO_DIR/configs/.spicetify" "$HOME/"
-  else
-    echo "[-] Spicetify config directory not found!"
-  fi
-
-  echo "[+] Applying Spicetify configuration..."
-  /home/$USER/.spicetify/spicetify backup apply
-  /home/$USER/.spicetify/spicetify config custom_apps lyrics-plus
-  /home/$USER/.spicetify/spicetify apply
-else
-  echo "[-] Skipping Spicetify installation."
-fi
-
 # reflector configuration (arch servers installation)
 sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
@@ -128,5 +98,6 @@ echo "UUID=6A18EBE718EBAFED /mnt/e ntfs defaults,nofail 0 0" | sudo tee -a /etc/
 echo "[!] REMINDER: For OpenVPN place '.ovpn' configuration file in '$HOME/.config/openvpn/openvpn.ovpn'"
 echo "[!] REMINDER: Don't forget to configure .ssh for GitHub"
 echo "[!] REMINDER: Don't forget to put Gemini Api Key in .bashrc"
+echo "[!] REMINDER: Don't forget to execute spicetify.ssh if needed"
 
 echo "[✓] Hyprland environment successfully installed and configured!"
