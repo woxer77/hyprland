@@ -1,12 +1,12 @@
 #!/bin/bash
 
-CONFIG_PATH="/home/woxer/.config/wireguard/wg0.conf"
-WG_INTERFACE=$(basename "$CONFIG_PATH" .conf)
+VPN_INTERFACE="tun0"
+CONFIG_PATH="$HOME/.config/openvpn/openvpn.ovpn"
 
-if ip link show "$WG_INTERFACE" &> /dev/null; then
-    sudo /usr/bin/wg-quick down "$CONFIG_PATH"
+if ip link show "$VPN_INTERFACE" &> /dev/null; then
+    sudo killall openvpn
 else
-    sudo /usr/bin/wg-quick up "$CONFIG_PATH"
+    sudo openvpn --config "$CONFIG_PATH" --daemon
 fi
 
 pkill -RTMIN+10 waybar # for insta module update

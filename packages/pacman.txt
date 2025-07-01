@@ -75,10 +75,4 @@ swww
 nnn
 libva-mesa-driver
 mesa
-vulkan-radeon
-xf86-video-amdgpu
-xf86-video-ati
-xorg-server
-xorg-xinit
-hyprpaper
-swww
+openvpn

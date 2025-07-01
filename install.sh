@@ -5,7 +5,6 @@ IFS=$'\n\t'
 
 USER_HOME="/home/$USER"
 REPO_DIR="$(pwd)"
-#WG_SCRIPT="$REPO_DIR/scripts/wireguard-install.sh"
 
 # Ensure the script is not run as root
 if [ "$EUID" -eq 0 ]; then
@@ -43,14 +42,10 @@ else
   echo "[-] File packages/yay.txt not found!"
 fi
 
-# Install wg_tool
-#yay -Sy --needed --mflags --skipinteg wg_tool
-
 # Download fonts
 echo "[+] Downloading RubikWetPaint font..."
 mkdir -p "$HOME/.local/share/fonts"
-cd "$HOME/.local/share/fonts"
-wget -q https://github.com/google/fonts/raw/main/ofl/rubikwetpaint/RubikWetPaint-Regular.ttf
+wget -q -O "$HOME/.local/share/fonts/RubikWetPaint-Regular.ttf" https://github.com/google/fonts/raw/main/ofl/rubikwetpaint/RubikWetPaint-Regular.ttf
 
 # Copy configuration files (after packages are installed)
 echo "[+] Copying configuration files..."
@@ -61,7 +56,7 @@ echo "[+] Copying configuration files..."
 # Fix config permissions
 chmod -R 755 "$HOME/.config" 2>/dev/null || true
 
-# Ensure Downloads directory exists
+# Create Downloads directory
 mkdir -p "$HOME/Downloads"
 
 # Copy custom scripts to /usr/local/bin
@@ -76,66 +71,50 @@ if [ -d "$REPO_DIR/Wallpapers" ]; then
   cp -r "$REPO_DIR/Wallpapers" "$HOME/Wallpapers"
 fi
 
-# Configuring wireguard client
-#echo "[+] Configuring sudoers for WireGuard..."
-#WG_CONF="$HOME/.config/wireguard/wg0.conf"
-#SUDOERS_LINE_UP="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick up $WG_CONF"
-#SUDOERS_LINE_DOWN="$USER ALL=(ALL) NOPASSWD: /usr/bin/wg-quick down $WG_CONF"
+# Ask before installing Gemini CLI
+read -p "[?] Do you want to install Gemini CLI? (y/N): " gemini_choice
+if [[ "$gemini_choice" =~ ^[Yy]$ ]]; then
+  echo "[+] Installing Gemini CLI..."
+  sudo npm install -g @google/gemini-cli
+else
+  echo "[-] Skipping Gemini CLI installation."
+fi
 
-#if ! sudo grep -qxF "$SUDOERS_LINE_UP" /etc/sudoers; then
-#  echo "$SUDOERS_LINE_UP" | sudo tee -a /etc/sudoers
-#fi
-#if ! sudo grep -qxF "$SUDOERS_LINE_DOWN" /etc/sudoers; then
-#  echo "$SUDOERS_LINE_DOWN" | sudo tee -a /etc/sudoers
-#fi
-#chmod 600 $WG_CONF
+# Ask before installing Spicetify
+read -p "[?] Do you want to install and configure Spicetify? (y/N): " spicetify_choice
+if [[ "$spicetify_choice" =~ ^[Yy]$ ]]; then
+  # Create dummy Spotify config for Spicetify
+  echo "[+] Creating dummy Spotify config for Spicetify..."
+  mkdir -p "$HOME/.config/spotify"
+  touch "$HOME/.config/spotify/prefs"
 
-# Copy rt_tables file for stable wireguard VPN work
-#RT_TABLES_FILE="/etc/iproute2/rt_tables"
-#if [ -f "$RT_TABLES_FILE" ]; then
-#  echo "File $RT_TABLES_FILE already exists."
-#else
-#  sudo mkdir -p /etc/iproute2
-#  sudo cp "$REPO_DIR/etc/rt_tables" "$RT_TABLES_FILE"
-#  echo "File has been successfully copied."
-#fi
+  # Install and configure Spicetify
+  echo "[+] Installing Spicetify CLI..."
+  curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
 
-# Prompt for WireGuard setup
-#read -rp "[?] Do you want to install and configure WireGuard as a server? [y/N]: " INSTALL_WG
-#if [[ "$INSTALL_WG" =~ ^[Yy]$ ]]; then
-#  if [[ -f "$WG_SCRIPT" ]]; then
-#    echo "[+] Running WireGuard setup script..."
-#    sudo bash "$WG_SCRIPT"
-#  else
-#    echo "[-] WireGuard script $WG_SCRIPT not found!"
-#  fi
-#else
-#  echo "[!] Skipping WireGuard installation."
-#fi
+  echo "[+] Installing Spicetify Marketplace..."
+  curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
 
-# Prompt for Spicetify setup
-#read -rp "[?] Do you want to install Spicetify? [y/N]: " INSTALL_SPICETIFY
-#if [[ "$INSTALL_SPICETIFY" =~ ^[Yy]$ ]]; then
-#  echo "[+] Installing Spicetify CLI..."
-#  curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
-  # !!!!!! need to startup spotify before marketpace installation
-  #echo "[+] Installing Spicetify Marketplace..."
-  #curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
+  echo "[+] Copying Spicetify configuration..."
+  if [ -d "$REPO_DIR/configs/.spicetify" ]; then
+    cp -r "$REPO_DIR/configs/.spicetify" "$HOME/"
+  else
+    echo "[-] Spicetify config directory not found!"
+  fi
 
-#  echo "[+] Copying Spicetify configuration..."
-#  if [ -d "$REPO_DIR/configs/.spicetify" ]; then
-#    cp -r "$REPO_DIR/configs/.spicetify" "$HOME/"
-#  else
-#    echo "[-] Spicetify config directory not found!"
-#  fi
-#else
-#  echo "[!] Skipping Spicetify installation."
-#fi
-
-#spicetify config custom_apps lyrics-plus
-#spicetify apply
+  echo "[+] Applying Spicetify configuration..."
+  /home/$USER/.spicetify/spicetify backup apply
+  /home/$USER/.spicetify/spicetify config custom_apps lyrics-plus
+  /home/$USER/.spicetify/spicetify apply
+else
+  echo "[-] Skipping Spicetify installation."
+fi
 
 # reflector configuration (arch servers installation)
 sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+
+echo "[!] REMINDER: For OpenVPN place '.ovpn' configuration file in '$HOME/.config/openvpn/openvpn.ovpn'"
+echo "[!] REMINDER: Don't forget to configure .ssh for GitHub"
+echo "[!] REMINDER: Don't forget to put Gemini Api Key in .bashrc"
 
 echo "[✓] Hyprland environment successfully installed and configured!"

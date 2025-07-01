@@ -1,10 +1,9 @@
 #!/bin/bash
 
-CONFIG_PATH="/home/woxer/.config/wireguard/wg0.conf"
-WG_INTERFACE=$(basename "$CONFIG_PATH" .conf)
+VPN_INTERFACE="tun0"
 
-if ip link show "$WG_INTERFACE" &> /dev/null; then
-    echo '{"text": "VPN", "class": "connected", "tooltip": "WireGuard VPN is active"}'
+if ip link show "$VPN_INTERFACE" &> /dev/null; then
+    echo '{"text": "VPN", "class": "connected", "tooltip": "OpenVPN is active"}'
 else
-    echo '{"text": "VPN", "class": "disconnected", "tooltip": "WireGuard VPN is inactive"}'
+    echo '{"text": "VPN", "class": "disconnected", "tooltip": "OpenVPN is inactive"}'
 fi
