@@ -113,8 +113,17 @@ fi
 # reflector configuration (arch servers installation)
 sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
+# Configuring sudoers
 echo "[+] Configuring sudoers..."
 echo -e "\n$USER ALL=(ALL) NOPASSWD: /usr/bin/killall openvpn, /usr/sbin/openvpn --config $USER_HOME/.config/openvpn/openvpn.ovpn --daemon" >> /etc/sudoers
+
+# Automatically mount disks so they can be accessible
+echo -e "\n# Entry for 1TB HDD (sda1)"
+echo -e "\nUUID=9E9A93F69A93C8E3 /mnt/d ntfs defaults,nofail 0 0" >> /etc/fstab
+echo -e "\n# Entry for 1TB NVMe (nvme1n1p5)"
+echo -e "\nUUID=6A18EBE718EBAFED /mnt/e ntfs defaults,nofail 0 0" >> /etc/fstab
+
+# Success
 
 echo "[!] REMINDER: For OpenVPN place '.ovpn' configuration file in '$HOME/.config/openvpn/openvpn.ovpn'"
 echo "[!] REMINDER: Don't forget to configure .ssh for GitHub"
