@@ -2,3 +2,4 @@ figma-linux
 smem
 visual-studio-code-bin
 waypaper
+emote
