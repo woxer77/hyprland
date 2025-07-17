@@ -89,9 +89,9 @@ echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/killall openvpn, /usr/sbin/openvpn --co
 
 # Automatically mount disks so they can be accessible
 echo "# Entry for 1TB HDD (sda1)" | sudo tee -a /etc/fstab 
-echo "UUID=9E9A93F69A93C8E3 /mnt/d ntfs defaults,nofail 0 0" | sudo tee -a /etc/fstab
+echo "UUID=9E9A93F69A93C8E3 /mnt/d ntfs-3g defaults,nofail 0 0" | sudo tee -a /etc/fstab
 echo "# Entry for 1TB NVMe (nvme1n1p5)" | sudo tee -a /etc/fstab
-echo "UUID=6A18EBE718EBAFED /mnt/e ntfs defaults,nofail 0 0" | sudo tee -a /etc/fstab
+echo "UUID=6A18EBE718EBAFED /mnt/e ntfs-3g defaults,nofail 0 0" | sudo tee -a /etc/fstab
 
 # Success
 

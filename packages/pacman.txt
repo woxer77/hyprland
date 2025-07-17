@@ -3,6 +3,7 @@ kitty
 waybar
 libreoffice-still
 reflector
+ntfs-3g
 7zip
 hyprpolkitagent
 spotify-launcher
