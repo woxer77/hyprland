@@ -2,3 +2,4 @@ smem
 visual-studio-code-bin
 waypaper
 emote
+google-chrome
