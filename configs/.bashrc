@@ -11,7 +11,7 @@ export NNN_OPENER="$HOME/.config/nnn/plugins/nuke"
 export NNN_FIFO=/tmp/nnn.fifo
 export NNN_SPLIT="v"
 export PATH=$PATH:/home/woxer/.spicetify
-export GEMINI_API_KEY=""
+export GEMINI_API_KEY="AIzaSyDnHuIgOxO2kDIysO5Ken2y4A0dWNYkL0c"
 
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
@@ -22,6 +22,7 @@ alias grep='grep --color=auto'
 alias cls='clear'
 alias img='loupe'
 alias j='z'
+alias calc='gnome-calculator'
 
 mem() {
   if [ -z "$1" ]; then
