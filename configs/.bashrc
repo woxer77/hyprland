@@ -11,7 +11,7 @@ export NNN_OPENER="$HOME/.config/nnn/plugins/nuke"
 export NNN_FIFO=/tmp/nnn.fifo
 export NNN_SPLIT="v"
 export PATH=$PATH:/home/woxer/.spicetify
-export GEMINI_API_KEY="AIzaSyDnHuIgOxO2kDIysO5Ken2y4A0dWNYkL0c"
+export GEMINI_API_KEY=""
 
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
