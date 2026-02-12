@@ -1,5 +1,7 @@
 # Hyprland Auto Setup for Arch Linux
 
+![Preview](desktop.png)
+
 <pre>
 git clone https://github.com/woxer77/hyprland.git
 cd hyprland
